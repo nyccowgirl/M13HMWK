@@ -32,26 +32,27 @@ public class Address {
 			for (Field field : fields) {
 				if (field.isAnnotationPresent(ProperLength.class)) {
 					ProperLength annotation = field.getAnnotation(ProperLength.class);
-//					field.setAccessible(true);
 					String currentField = (String) field.get(this);
-//					System.out.println("TEST" + currentField);
-//					System.out.println("length: " + currentField.length() + "\tmin: " + annotation.min() + "\tmax: " + annotation.max());
-//					System.out.println(currentField.length() < annotation.min() );
-//					System.out.println(currentField.length() > annotation.max());
-//					System.out.println(currentField.length() < annotation.min() || currentField.length() > annotation.max());
 
 					if (currentField.length() < annotation.min() || currentField.length() > annotation.max()) {
-						System.out.println("HERE");
-//						throw new IllegalArgumentException("ERROR");
-						throw new IllegalArgumentException(field.getName() + "has to be within " + annotation.min() +
-								" and " + annotation.max() + " characters.");
-//						System.out.println("XXX");
+						switch (field.getName()) {
+							case "street":
+							case "city": {
+								throw new IllegalArgumentException("Invalid address value [" + field.getName() +
+										" = \"" + currentField + "\"]: " + field.getName() + " must be " +
+										annotation.min() + " to " + annotation.max() + " characters.");
+							}
+							case "state":
+							case "zip": {
+								throw new IllegalArgumentException("Invalid address value [" + field.getName() +
+										" = \"" + currentField + "\"]: " + field.getName() + " must be exactly " +
+										annotation.min() + " characters.");
+							}
+						}
 					}
 				}
 			}
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-
-		}
+		} catch (IllegalAccessException e) { }
 
       /* some pseudocode in case it helps:
 		 * get the current class
